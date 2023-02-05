@@ -1,5 +1,4 @@
 const logger = require('./logger.service')
-const codeService = require('../api/code/code.service')
 
 var gIo = null
 
@@ -10,96 +9,35 @@ function setupSocketAPI(http) {
         }
     })
     gIo.on('connection', socket => {
-
         logger.info(`New connected socket [id: ${socket.id}]`)
         socket.on('disconnect', socket => {
             logger.info(`Socket disconnected [id: ${socket.id}]`)
         })
 
-        socket.on('code-set-topic', topic => {
+        socket.on('set-topic', async topic => {
             if (socket.myTopic === topic) return
             if (socket.myTopic) {
-                // leaving his prv room--socket still got topic as a key
+                // (beacuse it is connected to the previous topic)
                 socket.leave(socket.myTopic)
                 logger.info(`Socket is leaving topic ${socket.myTopic} [id: ${socket.id}]`)
-
-                if (socket.isMentor) socket.isMentor = null
-                logger.info('Mentor left his prv room and joining to new room')
             }
-
             socket.join(topic)
             socket.myTopic = topic
-            // NOTE try to Opitimize http req 25/1-->12:32 pm
-            socket.emit('set-socketId', socket.id)
+            logger.info(`Socket is joining topic ${socket.myTopic} [id: ${socket.id}]`)
+            const sockets = await gIo.in(topic).fetchSockets()
+            socket.emit('joined-topic', sockets.length !== 2)
         })
 
-        socket.on('load-code', codeId => {
-            // broadcast && specific room, the trigger socket is updated by front exclusively
-            socket.broadcast.to(socket.myTopic).emit('load-code', codeId)
-        })
-
-        socket.on('check-is-mentor', () => {
-            // when mentor has left the page and now back && 
-            // isn't get into another code block
-            if (socket.isMentor) {
-                socket.emit('check-is-mentor', true)
-            } else {
-                const room = socket.myTopic
-                const map = gIo.sockets.adapter.rooms
-
-                if (map.get(room).size === 1) {
-                    socket.isMentor = true
-                    socket.emit('check-is-mentor', true)
-                } else {
-                    socket.emit('check-is-mentor', false)
-                }
-            }
-        })
-        socket.on('check-is-last', code => {
-            const room = socket.myTopic
-            const map = gIo.sockets.adapter.rooms
-            // when is not the mentor --> leave the room
-            if (!socket.isMentor) {
-                socket.leave(socket.myTopic)
-                socket.myTopic = null
-                // if the room is empty and without mentor
-                if (!map.get(room)) {
-                    code.code = 'function func(args){}'
-                    codeService.update(code)
-                    logger.info(`[room: ${room}] is empty and without mentor---> zeroing code`)
-                }
-            }
-            // the mentor leaving view of the block-code --> 
-            // still not leaving the room--> check if he's the last one
-            else if (map.get(room).size === 1) {
-                code.code = 'function func(args){}'
-                codeService.update(code)
-                logger.info(`[room: ${room}]  is empty from users and mentor left the room---> zeroing code`)
-            }
-        })
-        socket.on('success-msg', () => {
-            gIo.to(socket.myTopic).emit('success-msg')
+        socket.on('code-update', (answer) => {
+            logger.info(
+                `answer updated from socket [id: ${socket.id}]`
+            )
+            // emits to other sockets in the same room
+            socket.broadcast.to(socket.myTopic).emit('code-updated', answer)
         })
     })
 }
 
-// NOTE try to Opitimize http req 25/1-->12:32 pm
-async function customBroadcast({ type, data, socketId }) {
-    logger.info('Inside Brodcasting load-load')
-    console.log(socketId)
-    const excludedSocket = await _getExcludedSocket(socketId)
-    const room = excludedSocket.myTopic
-    excludedSocket.broadcast.to(room).emit(type, data)
-}
-
-async function _getExcludedSocket(socketId) {
-    const sockets = await gIo.fetchSockets()
-    const socket = sockets.find(s => s.id === socketId)
-    return socket
-}
-
 module.exports = {
-    // set up the sockets service and define the API
-    setupSocketAPI,
-    customBroadcast
+    setupSocketAPI
 }
