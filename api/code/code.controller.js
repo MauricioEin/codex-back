@@ -2,45 +2,45 @@ const codeService = require('./code.service')
 const socketService = require('../../services/socket.service')
 const logger = require('../../services/logger.service')
 
-async function getCodes(req, res) {
+async function getBlocks(req, res) {
   try {
-    logger.debug('Getting Codes')
-    const codes = await codeService.query()
-    res.json(codes)
+    logger.debug('Getting Blocks')
+    const blocks = await codeService.query()
+    res.json(blocks)
   } catch (err) {
-    logger.error('Failed to get codes', err)
-    res.status(500).send({ err: 'Failed to get codes' })
+    logger.error('Failed to get blocks', err)
+    res.status(500).send({ err: 'Failed to get blocks' })
   }
 }
 
-async function getCodeById(req, res) {
+async function getBlockById(req, res) {
   try {
-    const codeId = req.params.id
-    const code = await codeService.getById(codeId)
-    res.json(code)
+    const blockId = req.params.id
+    const block = await codeService.getById(blockId)
+    res.json(block)
   } catch (err) {
-    logger.error('Failed to get code', err)
-    res.status(500).send({ err: 'Failed to get code' })
+    logger.error('Failed to get block', err)
+    res.status(500).send({ err: 'Failed to get block' })
   }
 }
 
-async function updateCode(req, res) {
+async function updateBlock(req, res) {
   try {
-    const code = req.body
-    console.log(code)
-    const updatedCode = await codeService.update(code.code)
-    // socketService.customBroadcast({ type: 'load-code', data: code.code._id, socketId: code.socketId })
-    res.json(updatedCode)
+    const block = req.body
+    console.log(block)
+    const updatedBlock = await codeService.update(block.code)
+    // socketService.customBroadcast({ type: 'load-block', data: block.block._id, socketId: block.socketId })
+    res.json(updatedBlock)
 
   } catch (err) {
-    logger.error('Failed to update code', err)
-    res.status(500).send({ err: 'Failed to update code' })
+    logger.error('Failed to update block', err)
+    res.status(500).send({ err: 'Failed to update block' })
 
   }
 }
 
 module.exports = {
-  getCodes,
-  getCodeById,
-  updateCode,
+  getBlocks,
+  getBlockById,
+  updateBlock,
 }

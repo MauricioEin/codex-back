@@ -5,34 +5,34 @@ const ObjectId = require('mongodb').ObjectId
 async function query() {
     try {
         const collection = await dbService.getCollection('code')
-        var codes = await collection.find().toArray()
-        return codes
+        var blocks = await collection.find().toArray()
+        return blocks
     } catch (err) {
-        logger.error('cannot find codes', err)
+        logger.error('cannot find blocks', err)
         throw err
     }
 }
 
-async function getById(codeId) {
+async function getById(blockId) {
     try {
         const collection = await dbService.getCollection('code')
-        const code = collection.findOne({ _id: ObjectId(codeId) })
-        return code
+        const block = collection.findOne({ _id: ObjectId(blockId) })
+        return block
     } catch (err) {
-        logger.error(`while finding code ${codeId}`, err)
+        logger.error(`while finding block ${blockId}`, err)
         throw err
     }
 }
 
-async function update(code) {
+async function update(block) {
     try {
        
         const collection = await dbService.getCollection('code')
-        await collection.updateOne({ _id: ObjectId(code._id) }, { $set: { ...code } })
-        return code
+        await collection.updateOne({ _id: ObjectId(block._id) }, { $set: { ...block } })
+        return block
 
     } catch (err) {
-        logger.error(`cannot update code ${code._id}`, err)
+        logger.error(`cannot update block ${block._id}`, err)
         throw err
     }
 }

@@ -1,9 +1,9 @@
 const express = require('express')
-const { getCodes, getCodeById, updateCode } = require('./code.controller')
+const { getBlocks, getBlockById, updateBlock } = require('./code.controller')
 const router = express.Router()
 
-router.get('/', getCodes)
-router.get('/:id', getCodeById)
-router.put('/:id', updateCode)
+router.get('/', getBlocks)
+router.get('/:id', getBlockById)
+router.put('/:id', updateBlock)
 
 module.exports = router
