@@ -4,7 +4,7 @@ const ObjectId = require('mongodb').ObjectId
 
 async function query() {
     try {
-        const collection = await dbService.getCollection('code')
+        const collection = await dbService.getCollection('block')
         var blocks = await collection.find().toArray()
         return blocks
     } catch (err) {
@@ -15,7 +15,7 @@ async function query() {
 
 async function getById(blockId) {
     try {
-        const collection = await dbService.getCollection('code')
+        const collection = await dbService.getCollection('block')
         const block = collection.findOne({ _id: ObjectId(blockId) })
         return block
     } catch (err) {
@@ -27,7 +27,7 @@ async function getById(blockId) {
 async function update(block) {
     try {
        
-        const collection = await dbService.getCollection('code')
+        const collection = await dbService.getCollection('block')
         await collection.updateOne({ _id: ObjectId(block._id) }, { $set: { ...block } })
         return block
 

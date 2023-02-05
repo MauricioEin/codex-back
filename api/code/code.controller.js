@@ -4,7 +4,6 @@ const logger = require('../../services/logger.service')
 
 async function getBlocks(req, res) {
   try {
-    logger.debug('Getting Blocks')
     const blocks = await codeService.query()
     res.json(blocks)
   } catch (err) {
