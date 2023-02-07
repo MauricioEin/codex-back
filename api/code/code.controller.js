@@ -27,8 +27,7 @@ async function updateBlock(req, res) {
   try {
     const block = req.body
     console.log(block)
-    const updatedBlock = await codeService.update(block.code)
-    // socketService.customBroadcast({ type: 'load-block', data: block.block._id, socketId: block.socketId })
+    const updatedBlock = await codeService.update(block)
     res.json(updatedBlock)
 
   } catch (err) {

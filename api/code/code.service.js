@@ -26,9 +26,10 @@ async function getById(blockId) {
 
 async function update(block) {
     try {
-       
         const collection = await dbService.getCollection('block')
-        await collection.updateOne({ _id: ObjectId(block._id) }, { $set: { ...block } })
+        const auxBlock = {...block}
+        delete auxBlock._id
+        await collection.updateOne({ _id: ObjectId(block._id) }, { $set: auxBlock })
         return block
 
     } catch (err) {
