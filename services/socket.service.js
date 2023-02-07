@@ -26,6 +26,8 @@ function setupSocketAPI(http) {
             logger.info(`Socket is joining topic ${socket.myTopic} [id: ${socket.id}]`)
             const sockets = await gIo.in(topic).fetchSockets()
             socket.emit('joined-topic', sockets.length !== 2)
+            socket.broadcast.to(topic).emit('fellow-joined')
+
         })
 
         socket.on('code-update', (answer) => {
