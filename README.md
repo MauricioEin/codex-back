@@ -6,6 +6,6 @@
 
 <br>
 <p>Codex lets you see your students' code dynamically as they type it, and indicates them when they get the most accurate answer.</p>
-<p>Built using Vue3 and Vuex on frontend, Scss and highlight.js, and nodejs, express, mongodb and socket-io on backend.</p>
+<p>Built using Vue3 and Vuex on frontend, Scss and highlight.js, and nodejs, express, mongodb and socket-io on backend. Behaves well on both desktop and mobile.</p>
 
 <a href="https://github.com/MauricioEin/codex-front">Link to frontend repository</a>
